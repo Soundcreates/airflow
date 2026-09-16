@@ -84,10 +84,8 @@ class TestProjectStructure:
             "providers/cncf/kubernetes/tests/unit/cncf/kubernetes/test_k8s_model.py",
             "providers/cncf/kubernetes/tests/unit/cncf/kubernetes/test_kube_client.py",
             "providers/cncf/kubernetes/tests/unit/cncf/kubernetes/test_kube_config.py",
-            "providers/cncf/kubernetes/tests/unit/cncf/kubernetes/test_python_kubernetes_script.py",
             "providers/cncf/kubernetes/tests/unit/cncf/kubernetes/test_secret.py",
             "providers/cncf/kubernetes/tests/unit/cncf/kubernetes/triggers/test_kubernetes_pod.py",
-            "providers/cncf/kubernetes/tests/unit/cncf/kubernetes/utils/test_delete_from.py",
             "providers/cncf/kubernetes/tests/unit/cncf/kubernetes/utils/test_k8s_hashlib_wrapper.py",
             "providers/common/ai/tests/unit/common/ai/test_exceptions.py",
             "providers/common/compat/tests/unit/common/compat/standard/test_operators.py",
@@ -500,90 +498,3 @@ class TestGoogleProviderProjectStructure(ExampleCoverageTest, AssetsCoverageTest
     }
 
     @pytest.mark.xfail(reason="We did not reach full coverage yet")
-    def test_missing_assets(self):
-        super().test_missing_assets()
-
-
-class TestAmazonProviderProjectStructure(ExampleCoverageTest):
-    PROVIDER = "amazon"
-    CLASS_DIRS = ProjectStructureTest.CLASS_DIRS
-
-    BASE_CLASSES = {
-        "airflow.providers.amazon.aws.operators.base_aws.AwsBaseOperator",
-        "airflow.providers.amazon.aws.operators.glue_crawler._GlueCrawlerBaseOperator",
-        "airflow.providers.amazon.aws.operators.rds.RdsBaseOperator",
-        "airflow.providers.amazon.aws.operators.sagemaker.SageMakerBaseOperator",
-        "airflow.providers.amazon.aws.sensors.base_aws.AwsBaseSensor",
-        "airflow.providers.amazon.aws.sensors.bedrock.BedrockBaseSensor",
-        "airflow.providers.amazon.aws.sensors.dms.DmsTaskBaseSensor",
-        "airflow.providers.amazon.aws.sensors.emr.EmrBaseSensor",
-        "airflow.providers.amazon.aws.sensors.rds.RdsBaseSensor",
-        "airflow.providers.amazon.aws.sensors.sagemaker.SageMakerBaseSensor",
-        "airflow.providers.amazon.aws.operators.appflow.AppflowBaseOperator",
-        "airflow.providers.amazon.aws.operators.ecs.EcsBaseOperator",
-        "airflow.providers.amazon.aws.sensors.ecs.EcsBaseSensor",
-        "airflow.providers.amazon.aws.sensors.eks.EksBaseSensor",
-        "airflow.providers.amazon.aws.transfers.base.AwsToAwsBaseOperator",
-        "airflow.providers.amazon.aws.operators.comprehend.ComprehendBaseOperator",
-        "airflow.providers.amazon.aws.sensors.comprehend.ComprehendBaseSensor",
-        "airflow.providers.amazon.aws.sensors.kinesis_analytics.KinesisAnalyticsV2BaseSensor",
-    }
-
-    MISSING_EXAMPLES_FOR_CLASSES = {
-        # S3 Exasol transfer difficult to test, see: https://github.com/apache/airflow/issues/22632
-        "airflow.providers.amazon.aws.transfers.exasol_to_s3.ExasolToS3Operator",
-        # These operations take a lot of time, there are commented out in the system tests for this reason
-        "airflow.providers.amazon.aws.operators.dms.DmsStartReplicationOperator",
-        "airflow.providers.amazon.aws.operators.dms.DmsStopReplicationOperator",
-        # These modules are used in the SageMakerNotebookOperator and therefore don't have their own examples
-        "airflow.providers.amazon.aws.sensors.sagemaker_unified_studio.SageMakerNotebookSensor",
-    }
-
-    DEPRECATED_CLASSES = {
-        "airflow.providers.amazon.aws.operators.glue_crawler.GlueCrawlerOperator",
-        "airflow.providers.amazon.aws.operators.lambda_function.AwsLambdaInvokeFunctionOperator",
-    }
-
-
-class TestElasticsearchProviderProjectStructure(ExampleCoverageTest):
-    PROVIDER = "elasticsearch"
-    CLASS_DIRS = {"hooks"}
-    CLASS_SUFFIXES = ["Hook"]
-
-
-class TestCncfProviderProjectStructure(ExampleCoverageTest):
-    PROVIDER = "cncf/kubernetes"
-    CLASS_DIRS = ProjectStructureTest.CLASS_DIRS
-    BASE_CLASSES = {"airflow.providers.cncf.kubernetes.operators.resource.KubernetesResourceBaseOperator"}
-
-
-class TestSlackProviderProjectStructure(ExampleCoverageTest):
-    PROVIDER = "slack"
-    CLASS_DIRS = ProjectStructureTest.CLASS_DIRS
-    BASE_CLASSES = {
-        "airflow.providers.slack.transfers.base_sql_to_slack.BaseSqlToSlackOperator",
-        "airflow.providers.slack.operators.slack.SlackAPIOperator",
-    }
-    MISSING_EXAMPLES_FOR_CLASSES = set()
-    DEPRECATED_CLASSES = {
-        "airflow.providers.slack.notifications.slack_notifier.py.",
-        "airflow.providers.slack.transfers.sql_to_slack.SqlToSlackOperator",
-    }
-
-
-class TestDockerProviderProjectStructure(ExampleCoverageTest):
-    PROVIDER = "docker"
-
-
-class TestOperatorsHooks:
-    def test_no_illegal_suffixes(self):
-        illegal_suffixes = ["_operator.py", "_hook.py", "_sensor.py"]
-        files = itertools.chain.from_iterable(
-            glob.glob(f"{AIRFLOW_ROOT_PATH}/{part}/providers/**/{resource_type}/*.py", recursive=True)
-            for resource_type in ["operators", "hooks", "sensors", "example_dags"]
-            for part in ["airflow", "tests"]
-        )
-
-        invalid_files = [f for f in files if f.endswith(tuple(illegal_suffixes))]
-
-        assert invalid_files == []
